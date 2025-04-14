@@ -16,7 +16,7 @@ import * as tone from "tone"
 // x---------------------x
 //
 let capture; // webcam capture
-let capturing = true
+let capturing = false
 
 // ---------------------
 // DOM Element
@@ -25,7 +25,7 @@ let canvas = document.getElementById('p5')
 let c_width = canvas?.clientWidth
 let c_height = canvas?.clientHeight
 
-let current = "spread_0"
+let current = "video_1"
 
 // let flash_timeout = 1500
 // let flash_counter = 0
@@ -34,102 +34,125 @@ let current = "spread_0"
 // let flash_bg = "yellow"
 // let flash_text = "blue"
 
+let videos = {
+	"video_1": "./test.mp4",
+	"video_2": "./test.mp4"
+}
 
-let sketch = (p5: p5) => {
-	// function draw_video() {
-	// 	if (capturing) {
-	// 		p5.image(capture, 0, 0, c_width, c_height);
-	// 	}
-	// }
+let randoms = Array(50).fill(0).map((_, i) => ({ x: Math.random(), y: Math.random() }))
+
+let video_loaded = {}
+
+let sketch = (p: p5) => {
+	function qr_code_init() {
+		let options = Object.keys(videos)
+		setInterval(() => {
+			console.log('truing')
+			let canvas = document.querySelector('canvas');
+			if (!canvas) return;
+			QrScanner.scanImage(canvas, { returnDetailedScanResult: true })
+				.then(result => {
+					let text = result.data
+					console.log(text)
+
+					if (text !== current) {
+						if (options.includes(text)) {
+							current = text
+							if (video_loaded[current]) {
+								video_loaded[current].currentTime = 0
+								video_loaded[current].play()
+							}
+						}
+					}
+				})
+				.catch(error => { });
+		}, 500)
+	}
 
 
-
-	// function qr_code_init() {
-	// 	let options = Object.keys(spreads)
-	// 	setInterval(() => {
-	// 		let canvas = document.querySelector('canvas');
-	// 		if (!canvas) return;
-	// 		QrScanner.scanImage(canvas, { returnDetailedScanResult: true })
-	// 			.then(result => {
-	// 				let text = result.data
-	// 				console.log(text)
-	//
-	// 				if (text !== current) {
-	// 					if (options.includes(text)) {
-	// 						counter = 0
-	// 						image_layer.clear()
-	// 						current = text
-	// 					}
-	// 				}
-	//
-	// 			})
-	// 			.catch(error => {
-	// 			});
-	// 	}, 500)
-	// }
-
-
-	p5.preload = () => {
+	p.preload = () => {
 		// p5.textFont(font)
-		// Object.values(spreads).forEach((spread) => {
-		// 	spread.forEach((fn) => {
-		// 		if ("string" === typeof fn[0]
-		// 			&& fn[0].includes("image")
-		// 			&& "string" === typeof fn[1]) {
-		// 			// @ts-ignore
-		// 			let img = p5.loadImage(fn[1], () => { fn[1] = img })
-		// 		}
-		// 	})
-		// })
+		Object.entries(videos).forEach(([key, spread]) => {
+			let vid = p.createVideo(spread);
+			vid.autoplay = vid.muted = vid.loop = true;
+			vid.hide()
+			video_loaded[key] = vid
+		})
 	}
 
-	p5.setup = () => {
-		p5.createCanvas(c_width, c_height);
+	p.setup = () => {
+		p.createCanvas(c_width, c_height);
 		// p5.frameRate(3);
-		p5.textFont("monospace")
+		p.textFont("monospace")
 
 
-		// if (capturing) {
-		// 	//@ts-ignore
-		// 	capture = p5.createCapture(p5.VIDEO);
-		// 	capture.size(c_width, c_height);
-		// 	capture.hide();
-		// 	qr_code_init()
-		// }
+		if (capturing) {
+			//@ts-ignore
+			capture = p.createCapture(p.VIDEO);
+			capture.size(c_width, c_height);
+			capture.hide();
+			qr_code_init()
+		}
 
 	}
 
-	p5.draw = () => {
-		p5.background(255, 0, 0);
-		p5.fill(255, 150, 0);
+	p.draw = () => {
+		p.background(255, 0, 0);
+		p.fill(255, 150, 0);
 		// p5.ellipse(200, 200, 500, 500);
-		p5.textSize(12);
+		p.textSize(12);
 
-		// draw base image
-		// draw_video()
+		draw_webcam(p)
+		draw_video(p)
 
 		// draw pixel grid
-		p5.fill(0);
-		p5.text("Value: " + val, 10, 30);
-		p5.text("Counter: " + counter, 10, 50);
+		p.fill(0);
+	}
 
+}
 
-		// if ("string" == typeof flash) {
-		// 	if (flash_counter < flash_timeout) {
-		// 		p5.fill(flash_bg)
-		// 		p5.rect(0, 0, p5.width, p5.height)
-		// 		p5.fill(flash_text)
-		// 		p5.textSize(80)
-		// 		p5.textAlign(p5.CENTER, p5.CENTER)
-		// 		p5.text(flash, p5.width / 2, p5.height / 2)
-		// 		p5.textAlign(p5.LEFT, p5.TOP)
-		// 		flash_counter += delta
-		// 	}
-		// 	else {
-		// 		flash_counter = 0
-		// 		flash = null
-		// 	}
-		// }
+document.onkeydown = e => {
+	if (e.key == "c") current = ""
+}
+
+function draw_flash() {
+	// if ("string" == typeof flash) {
+	// 	if (flash_counter < flash_timeout) {
+	// 		p5.fill(flash_bg)
+	// 		p5.rect(0, 0, p5.width, p5.height)
+	// 		p5.fill(flash_text)
+	// 		p5.textSize(80)
+	// 		p5.textAlign(p5.CENTER, p5.CENTER)
+	// 		p5.text(flash, p5.width / 2, p5.height / 2)
+	// 		p5.textAlign(p5.LEFT, p5.TOP)
+	// 		flash_counter += delta
+	// 	}
+	// 	else {
+	// 		flash_counter = 0
+	// 		flash = null
+	// 	}
+	// }
+	//
+}
+
+function draw_video(p) {
+	if (video_loaded[current]) {
+		let video = video_loaded[current]
+		let w = video.width
+		let h = video.height
+		let ratio = (p.width / video.width) * .65
+		let w_r = w * ratio
+		let h_r = h * ratio
+		let w3 = (p.width - w_r)
+		let h3 = (p.height - h_r)
+		let index = Object.values(video_loaded).findIndex(e => e == video)
+		p.image(video, randoms[index].x * w3, randoms[index].y * h3, w_r, h_r);
+	}
+}
+
+function draw_webcam(p5) {
+	if (capturing) {
+		p5.image(capture, 0, 0, c_width, c_height);
 	}
 }
 
