@@ -7,7 +7,6 @@
 import { eff_on, html, render, sig } from "./solid_monke/solid_monke"
 import QrScanner from 'qr-scanner';
 import { Q5 as p5 } from "./q5/q5.js"
-import * as tone from "tone"
 
 // x---------------------x
 // -----------------------
