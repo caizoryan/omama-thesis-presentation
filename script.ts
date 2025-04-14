@@ -16,7 +16,7 @@ import * as tone from "tone"
 // x---------------------x
 //
 let capture; // webcam capture
-let capturing = false
+let capturing = true
 
 // ---------------------
 // DOM Element
@@ -26,6 +26,8 @@ let c_width = canvas?.clientWidth
 let c_height = canvas?.clientHeight
 
 let current = "video_1"
+let texture = "./p4.mp4"
+let texture_loaded
 
 // let flash_timeout = 1500
 // let flash_counter = 0
@@ -35,8 +37,10 @@ let current = "video_1"
 // let flash_text = "blue"
 
 let videos = {
-	"video_1": "./test.mp4",
-	"video_2": "./test.mp4"
+	"video_1": "./p1.mp4",
+	"video_2": "./p2.mp4",
+	"video_3": "./p3.mp4",
+	"video_4": "./p4.mp4",
 }
 
 let randoms = Array(50).fill(0).map((_, i) => ({ x: Math.random(), y: Math.random() }))
@@ -72,6 +76,15 @@ let sketch = (p: p5) => {
 
 	p.preload = () => {
 		// p5.textFont(font)
+		let load = () => {
+			texture_loaded = p.createVideo(texture)
+			texture_loaded.autoplay = true
+			texture_loaded.muted = true
+			texture_loaded.loop = true;
+			texture_loaded.hide()
+		}
+		load()
+
 		Object.entries(videos).forEach(([key, spread]) => {
 			let vid = p.createVideo(spread);
 			vid.autoplay = vid.muted = vid.loop = true;
@@ -97,13 +110,13 @@ let sketch = (p: p5) => {
 	}
 
 	p.draw = () => {
-		p.background(255, 0, 0);
+		p.background(255, 0, 255);
 		p.fill(255, 150, 0);
-		// p5.ellipse(200, 200, 500, 500);
 		p.textSize(12);
 
 		draw_webcam(p)
 		draw_video(p)
+		//draw_texture(p)
 
 		// draw pixel grid
 		p.fill(0);
@@ -111,8 +124,20 @@ let sketch = (p: p5) => {
 
 }
 
+const set_num = (num) => {
+	let v = Object.keys(videos)[num - 1]
+	console.log(v)
+	if (v) current = v
+}
+
 document.onkeydown = e => {
 	if (e.key == "c") current = ""
+	if (e.key == "1") set_num(1)
+	if (e.key == "2") set_num(2)
+	if (e.key == "3") set_num(3)
+	if (e.key == "4") set_num(4)
+	else console.log(e)
+
 }
 
 function draw_flash() {
@@ -135,7 +160,15 @@ function draw_flash() {
 	//
 }
 
+function draw_texture(p) {
+	p.blendMode(p.MULTIPLY)
+	let video = texture_loaded
+	p.image(video, 0, 0, p.width, p.height);
+	p.blendMode(p.BLEND)
+}
+
 function draw_video(p) {
+	p.blendMode("screen")
 	if (video_loaded[current]) {
 		let video = video_loaded[current]
 		let w = video.width
@@ -148,6 +181,7 @@ function draw_video(p) {
 		let index = Object.values(video_loaded).findIndex(e => e == video)
 		p.image(video, randoms[index].x * w3, randoms[index].y * h3, w_r, h_r);
 	}
+	p.blendMode(p.BLEND)
 }
 
 function draw_webcam(p5) {
