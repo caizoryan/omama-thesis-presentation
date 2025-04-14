@@ -24,7 +24,8 @@ let canvas = document.getElementById('p5')
 let c_width = canvas?.clientWidth
 let c_height = canvas?.clientHeight
 
-let current = "video_1"
+let current = ""
+
 let texture = "./p4.mp4"
 let texture_loaded
 
@@ -40,6 +41,10 @@ let videos = {
 	"video_2": "./p2.mp4",
 	"video_3": "./p3.mp4",
 	"video_4": "./p4.mp4",
+	"video_5": "./p5.mp4",
+	"video_6": "./p6.mp4",
+	"video_7": "./p7.mp4",
+	"video_8": "./p8.mp4",
 }
 
 let randoms = Array(50).fill(0).map((_, i) => ({ x: Math.random(), y: Math.random() }))
@@ -135,6 +140,11 @@ document.onkeydown = e => {
 	if (e.key == "2") set_num(2)
 	if (e.key == "3") set_num(3)
 	if (e.key == "4") set_num(4)
+	if (e.key == "5") set_num(5)
+	if (e.key == "6") set_num(6)
+	if (e.key == "7") set_num(7)
+	if (e.key == "8") set_num(8)
+
 	else console.log(e)
 
 }
