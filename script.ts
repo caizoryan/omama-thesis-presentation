@@ -53,7 +53,7 @@ let sketch = (p: p5) => {
 			console.log('truing')
 			let canvas = document.querySelector('canvas');
 			if (!canvas) return;
-			QrScanner.scanImage(canvas, { returnDetailedScanResult: true })
+			QrScanner.scanImage(capture, { returnDetailedScanResult: true })
 				.then(result => {
 					let text = result.data
 					console.log(text)
