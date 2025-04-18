@@ -124,6 +124,8 @@ let sketch = (p: p5) => {
 
 		// draw pixel grid
 		p.fill(0);
+		p.fill(0, 0, 0, 69); //opacity of black
+  p.rect(0, 0, p.width, p.height);
 	}
 
 }
