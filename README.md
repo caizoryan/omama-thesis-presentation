@@ -1,1 +1,1 @@
-Please navigate to [Here](/public)
+Please navigate to [Here](./public)
