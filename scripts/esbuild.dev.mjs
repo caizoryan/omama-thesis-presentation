@@ -6,7 +6,7 @@ esbuildServe(
     entryPoints: ["./script.ts"],
     bundle: true,
     sourcemap: true,
-    outfile: "public/build.min.js",
+    outfile: "public/bundle.min.js",
   },
   { root: "./public", port: 8080 },
 );

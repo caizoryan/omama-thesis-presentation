@@ -4,22 +4,14 @@ import copy from "esbuild-plugin-copy";
 
 const builder = async () => {
   await build({
-    entryPoints: ["./src/main.ts"],
+    entryPoints: ["./script.ts"],
     bundle: true,
-    minify: true,
+    minify: false,
     sourcemap: false,
     target: ["es2020"],
-    outfile: "./dist/bundle.min.js",
+    outfile: "./public/bundle.min.js",
     plugins: [
-      clean({
-        patterns: ["./dist/*", "./public/ignore.min.js"],
-      }),
-      copy({
-        assets: [
-          { from: "./public/*", to: "./" },
-          { from: "./index.html", to: "./index.html" },
-        ],
-      }),
+      clean({ patterns: ["./dist/*", "./public/bundle.min.js"] }),
     ],
   });
 };
